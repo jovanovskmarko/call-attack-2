@@ -2,27 +2,28 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe('Call Attacks Exercise 2', function () {
-  let deployer, attacker, secureStore, registry, usdc;
+  let deployer, attacker, secureStore, registryLibrary, usdc;
 
   before(async () => {
     /** SETUP EXERCISE - DON'T CHANGE ANYTHING HERE */
 
     [deployer, attacker] = await ethers.getSigners();
 
-    const Registry = await ethers.getContractFactory('Registry');
-    registry = await Registry.connect(deployer).deploy();
+    const RegistryLibrary = await ethers.getContractFactory('RegistryLibrary');
+    registryLibrary = await RegistryLibrary.connect(deployer).deploy();
 
     const USDC = await ethers.getContractFactory("USDC");
     usdc = await USDC.connect(deployer).deploy();
 
     const SecureStore = await ethers.getContractFactory('SecureStore');
-    secureStore = await SecureStore.connect(deployer).deploy(registry.address, 500000, usdc.address);
+
+    secureStore = await SecureStore.connect(deployer).deploy(registryLibrary.address, 500000, usdc.address);
 
     // Setting up the attacker
     await usdc.connect(deployer).mint(attacker.address, ethers.utils.parseEther('10000'));
 
     // Setting up the SecureStore
-    await usdc.connect(deployer).mint(secureStore.address, ethers.utils.parseEther('10000000')); 
+    await usdc.connect(deployer).mint(secureStore.address, ethers.utils.parseEther('10000000'));
 
   });
 

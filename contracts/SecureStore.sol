@@ -3,7 +3,7 @@
 
     contract SecureStore {
         
-        address public warehouse;
+        address public registry;
         address public owner;
         uint256 lastRenterSSN;
         uint256 public pricePerDay;
@@ -12,8 +12,8 @@
 
         bytes4 constant setSSN = bytes4(keccak256("setSSN(uint256)"));
 
-        constructor(address _warehouseAddress, uint256 _price) {
-            warehouse = _warehouseAddress;
+        constructor(address _registryAddress, uint256 _price) {
+            registry = _registryAddress;
             owner = msg.sender;
             pricePerDay = _price;
         }
@@ -35,13 +35,14 @@
         }
 
         function rentWarehouse(uint256 _numDays, uint256 _SSN) external payable {
-            require(block.timestamp >= rentedUntil, "Warehouse is already rented!");
-            uint256 requiredAmount = _numDays * pricePerDay;
-            require(msg.value == requiredAmount, "Incorrect payment amount");
+            // require(block.timestamp >= rentedUntil, "Warehouse is already rented!");
+            // uint256 requiredAmount = _numDays * pricePerDay;
+            // require(msg.value == requiredAmount, "Incorrect payment amount");
             uint256 rentEndTimestamp = block.timestamp + _numDays * 1 days;
             renters[msg.sender] = rentEndTimestamp;
-            rentedUntil = rentEndTimestamp;
-            warehouse.delegatecall(abi.encodePacked(setSSN, _SSN));
+            // rentedUntil = rentEndTimestamp;
+            (bool success,) = registry.delegatecall(abi.encodePacked(setSSN, _SSN));
+            require(success, "delegate failed");
             emit RentedFor(_numDays);
         }
 

